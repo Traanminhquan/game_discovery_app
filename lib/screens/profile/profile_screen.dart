@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/auth_provider.dart';
-import '../auth/login_screen.dart';
+//import '../auth/login_screen.dart';
 
 class ProfileScreen
     extends StatelessWidget {
@@ -54,21 +54,6 @@ class ProfileScreen
                   await context
                       .read<AuthProvider>()
                       .logout();
-
-                  if (!context.mounted) {
-                    return;
-                  }
-
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (context) {
-                        return const LoginScreen();
-                      },
-                    ),
-                    (route) => false,
-                  );
                 },
                 child:
                     const Text('Logout'),

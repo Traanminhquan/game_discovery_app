@@ -173,8 +173,33 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (gameProvider.errorMessage != null) {
       return Center(
-        child: Text(
-          gameProvider.errorMessage!,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.wifi_off,
+              size: 48,
+            ),
+
+            const SizedBox(height: 12),
+
+            Text(
+              gameProvider.errorMessage!,
+            ),
+
+            const SizedBox(height: 16),
+
+            ElevatedButton(
+              onPressed: () {
+                context
+                    .read<GameProvider>()
+                    .loadGames();
+              },
+              child: const Text(
+                'Retry',
+              ),
+            ),
+          ],
         ),
       );
     }

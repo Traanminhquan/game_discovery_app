@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/auth_provider.dart';
-import '../home/home_screen.dart';
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -11,17 +10,14 @@ class LoginScreen extends StatefulWidget {
   });
 
   @override
-  State<LoginScreen> createState() =>
-      _LoginScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState
-    extends State<LoginScreen> {
-  final emailController =
-      TextEditingController();
+class _LoginScreenState extends State<LoginScreen> {
+  final formKey = GlobalKey<FormState>();
 
-  final passwordController =
-      TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
 
   @override
   void dispose() {
@@ -32,111 +28,230 @@ class _LoginScreenState
   }
 
   Future<void> login() async {
-    final authProvider =
-        context.read<AuthProvider>();
+    // Kiểm tra validation trước
+    if (!formKey.currentState!.validate()) {
+      return;
+    }
 
-    final success = await authProvider.login(
+    final authProvider = context.read<AuthProvider>();
+
+    await authProvider.login(
       email: emailController.text.trim(),
       password: passwordController.text,
     );
-
-    if (!mounted) return;
-
-    if (success) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) {
-            return const HomeScreen();
-          },
-        ),
-      );
-    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final authProvider =
-        context.watch<AuthProvider>();
+    final authProvider = context.watch<AuthProvider>();
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login'),
+        title: const Text(
+          'Login',
+        ),
+        centerTitle: true,
       ),
-      body: Padding(
-        padding:
-            const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            TextField(
-              controller: emailController,
-              keyboardType:
-                  TextInputType.emailAddress,
-              decoration:
-                  const InputDecoration(
-                labelText: 'Email',
-              ),
-            ),
 
-            const SizedBox(height: 16),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Form(
+            key: formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 40),
 
-            TextField(
-              controller:
-                  passwordController,
-              obscureText: true,
-              decoration:
-                  const InputDecoration(
-                labelText: 'Password',
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            if (authProvider.errorMessage !=
-                null)
-              Padding(
-                padding:
-                    const EdgeInsets.only(
-                  bottom: 16,
+                const Icon(
+                  Icons.sports_esports,
+                  size: 80,
                 ),
-                child: Text(
-                  authProvider.errorMessage!,
-                ),
-              ),
 
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed:
-                    authProvider.isLoading
-                        ? null
-                        : login,
-                child:
-                    authProvider.isLoading
-                        ? const CircularProgressIndicator()
-                        : const Text(
-                            'Login',
-                          ),
-              ),
-            ),
+                const SizedBox(height: 20),
 
-            TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder:
-                        (context) {
-                      return const RegisterScreen();
-                    },
+                const Text(
+                  'Game Discovery',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
                   ),
-                );
-              },
-              child: const Text(
-                'Create account',
-              ),
+                ),
+
+                const SizedBox(height: 8),
+
+                Text(
+                  'Sign in to continue',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+
+                const SizedBox(height: 40),
+
+                // EMAIL
+                TextFormField(
+                  controller: emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.next,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    hintText: 'example@email.com',
+                    prefixIcon: const Icon(
+                      Icons.email_outlined,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value == null ||
+                        value.trim().isEmpty) {
+                      return 'Please enter your email';
+                    }
+
+                    if (!value.contains('@')) {
+                      return 'Please enter a valid email';
+                    }
+
+                    return null;
+                  },
+                ),
+
+                const SizedBox(height: 16),
+
+                // PASSWORD
+                TextFormField(
+                  controller: passwordController,
+                  obscureText: true,
+                  textInputAction: TextInputAction.done,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    prefixIcon: const Icon(
+                      Icons.lock_outline,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value == null ||
+                        value.isEmpty) {
+                      return 'Please enter your password';
+                    }
+
+                    if (value.length < 6) {
+                      return 'Password must be at least 6 characters';
+                    }
+
+                    return null;
+                  },
+
+                  // Bấm Enter trên bàn phím để login
+                  onFieldSubmitted: (_) {
+                    if (!authProvider.isLoading) {
+                      login();
+                    }
+                  },
+                ),
+
+                const SizedBox(height: 16),
+
+                // FIREBASE ERROR
+                if (authProvider.errorMessage != null)
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.red.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      crossAxisAlignment:
+                          CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.error_outline,
+                          color: Colors.red.shade700,
+                        ),
+
+                        const SizedBox(width: 8),
+
+                        Expanded(
+                          child: Text(
+                            authProvider.errorMessage!,
+                            style: TextStyle(
+                              color: Colors.red.shade700,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                if (authProvider.errorMessage != null)
+                  const SizedBox(height: 16),
+
+                // LOGIN BUTTON
+                SizedBox(
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed:
+                        authProvider.isLoading
+                            ? null
+                            : login,
+                    child:
+                        authProvider.isLoading
+                            ? const SizedBox(
+                                width: 22,
+                                height: 22,
+                                child:
+                                    CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Text(
+                                'Login',
+                              ),
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                // REGISTER
+                Row(
+                  mainAxisAlignment:
+                      MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "Don't have an account?",
+                    ),
+
+                    TextButton(
+                      onPressed: () {
+                        context
+                            .read<AuthProvider>()
+                            .clearError();
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return const RegisterScreen();
+                            },
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        'Register',
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

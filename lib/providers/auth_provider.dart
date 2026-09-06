@@ -16,6 +16,34 @@ class AuthProvider extends ChangeNotifier {
   User? get currentUser =>
       _authService.currentUser;
 
+  String _getErrorMessage(
+    FirebaseAuthException error,
+  ) {
+    switch (error.code) {
+      case 'email-already-in-use':
+        return 'This email is already registered.';
+
+      case 'invalid-email':
+        return 'Invalid email address.';
+
+      case 'weak-password':
+        return 'Password is too weak.';
+
+      case 'user-not-found':
+        return 'No account found with this email.';
+
+      case 'wrong-password':
+      case 'invalid-credential':
+        return 'Incorrect email or password.';
+
+      case 'network-request-failed':
+        return 'Please check your internet connection.';
+
+      default:
+        return 'Authentication failed. Please try again.';
+    }
+  }
+
   Future<bool> register({
     required String email,
     required String password,
@@ -32,8 +60,7 @@ class AuthProvider extends ChangeNotifier {
 
       return true;
     } on FirebaseAuthException catch (error) {
-      _errorMessage = error.message;
-
+      _errorMessage = _getErrorMessage(error);
       return false;
     } finally {
       _setLoading(false);
@@ -56,8 +83,7 @@ class AuthProvider extends ChangeNotifier {
 
       return true;
     } on FirebaseAuthException catch (error) {
-      _errorMessage = error.message;
-
+      _errorMessage = _getErrorMessage(error);
       return false;
     } finally {
       _setLoading(false);
