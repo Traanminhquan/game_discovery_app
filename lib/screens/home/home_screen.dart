@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-import '../../models/game.dart';
-import '../../services/game_service.dart';
+import '../../providers/game_provider.dart';
 import '../../widgets/game_card.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -12,81 +12,23 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final GameService gameService = GameService();
-
-  List<Game> games = [];
-
-  bool isLoading = true;
-  String? errorMessage;
-
   int currentIndex = 0;
 
   @override
   void initState() {
     super.initState();
 
-    loadGames();
-  }
+    Future.microtask(() {
+      if (!mounted) return;
 
-  Future<void> loadGames() async {
-    try {
-      final result = await gameService.getGames();
-
-      setState(() {
-        games = result;
-        isLoading = false;
-      });
-    } catch (error) {
-      setState(() {
-        errorMessage = 'Failed to load games';
-        isLoading = false;
-      });
-    }
-  }
-
-  Widget buildBody() {
-    if (isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
-    }
-
-    if (errorMessage != null) {
-      return Center(
-        child: Text(
-          errorMessage!,
-        ),
-      );
-    }
-
-    if (games.isEmpty) {
-      return const Center(
-        child: Text(
-          'No games found',
-        ),
-      );
-    }
-
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 16,
-      ),
-      itemCount: games.length,
-      itemBuilder: (context, index) {
-        final game = games[index];
-
-        return GameCard(
-          title: game.title,
-          genre: game.genre,
-          platform: game.platform,
-          thumbnail: game.thumbnail,
-        );
-      },
-    );
+      context.read<GameProvider>().loadGames();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final gameProvider = context.watch<GameProvider>();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -99,22 +41,68 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(
+                16,
+                16,
+                16,
+                8,
+              ),
               child: TextField(
+                onChanged: (value) {
+                  context
+                      .read<GameProvider>()
+                      .searchGames(value);
+                },
                 decoration: InputDecoration(
                   hintText: 'Search games...',
                   prefixIcon: const Icon(
                     Icons.search,
                   ),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius:
+                        BorderRadius.circular(12),
                   ),
                 ),
               ),
             ),
 
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 8,
+              ),
+              child: DropdownButtonFormField<String>(
+                initialValue:
+                    gameProvider.selectedGenre,
+                decoration: InputDecoration(
+                  labelText: 'Genre',
+                  border: OutlineInputBorder(
+                    borderRadius:
+                        BorderRadius.circular(12),
+                  ),
+                ),
+                items: gameProvider.genres.map(
+                  (genre) {
+                    return DropdownMenuItem(
+                      value: genre,
+                      child: Text(genre),
+                    );
+                  },
+                ).toList(),
+                onChanged: (genre) {
+                  if (genre != null) {
+                    context
+                        .read<GameProvider>()
+                        .filterByGenre(genre);
+                  }
+                },
+              ),
+            ),
+
             Expanded(
-              child: buildBody(),
+              child: _buildGameList(
+                gameProvider,
+              ),
             ),
           ],
         ),
@@ -142,6 +130,50 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildGameList(
+    GameProvider gameProvider,
+  ) {
+    if (gameProvider.isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
+    if (gameProvider.errorMessage != null) {
+      return Center(
+        child: Text(
+          gameProvider.errorMessage!,
+        ),
+      );
+    }
+
+    if (gameProvider.games.isEmpty) {
+      return const Center(
+        child: Text(
+          'No games found',
+        ),
+      );
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 16,
+      ),
+      itemCount: gameProvider.games.length,
+      itemBuilder: (context, index) {
+        final game =
+            gameProvider.games[index];
+
+        return GameCard(
+          title: game.title,
+          genre: game.genre,
+          platform: game.platform,
+          thumbnail: game.thumbnail,
+        );
+      },
     );
   }
 }
