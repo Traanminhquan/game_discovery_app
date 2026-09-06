@@ -28,17 +28,6 @@ The project was developed as a personal portfolio project to practice Flutter mo
 - HTTP
 - Git & GitHub
 
-## Architecture
-
-The project follows a simple layered architecture:
-
-UI
-↓
-Provider
-↓
-Service
-↓
-REST API / Firebase / Local Storage
 
 ## Project Structure
 
@@ -55,26 +44,17 @@ lib/
 
 Game data is provided by the FreeToGame API.
 
-## Screenshots
-
-Add screenshots here.
 
 ## Getting Started
 
-Clone the repository:
+Clone the repository: git clone <https://github.com/Traanminhquan/game_discovery_app.git>
 
-git clone <repository-url>
+Install dependencies: flutter pub get
 
-Install dependencies:
-
-flutter pub get
-
-Run the application:
-
-flutter run
+Run the application: flutter run
 
 ## Author
 
-Your Name
+Tran Minh Quan
 
-GitHub: <github-link>
+GitHub: <https://github.com/Traanminhquan>

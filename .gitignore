@@ -12,6 +12,11 @@
 .swiftpm/
 migrate_working_dir/
 
+# IDE
+.vscode/
+.idea/
+*.iml
+
 # IntelliJ related
 *.iml
 *.ipr
@@ -46,3 +51,20 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# Android local files
+android/.gradle/
+android/local.properties
+
+# Signing / secrets
+android/key.properties
+*.jks
+*.keystore
+
+# Environment files
+.env
+.env.*
+
+# OS
+.DS_Store
+Thumbs.db
