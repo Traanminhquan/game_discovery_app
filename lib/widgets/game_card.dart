@@ -4,12 +4,14 @@ class GameCard extends StatelessWidget {
   final String title;
   final String genre;
   final String platform;
+  final String thumbnail;
 
   const GameCard({
     super.key,
     required this.title,
     required this.genre,
     required this.platform,
+    required this.thumbnail,
   });
 
   @override
@@ -17,19 +19,30 @@ class GameCard extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         child: Row(
           children: [
-            Container(
-              width: 70,
-              height: 70,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Colors.grey.shade300,
-              ),
-              child: const Icon(
-                Icons.sports_esports,
-                size: 36,
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.network(
+                thumbnail,
+                width: 90,
+                height: 70,
+                fit: BoxFit.cover,
+                errorBuilder: (
+                  context,
+                  error,
+                  stackTrace,
+                ) {
+                  return Container(
+                    width: 90,
+                    height: 70,
+                    color: Colors.grey.shade300,
+                    child: const Icon(
+                      Icons.sports_esports,
+                    ),
+                  );
+                },
               ),
             ),
 
@@ -41,6 +54,8 @@ class GameCard extends StatelessWidget {
                 children: [
                   Text(
                     title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.bold,
@@ -58,21 +73,18 @@ class GameCard extends StatelessWidget {
 
                   const SizedBox(height: 4),
 
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.devices,
-                        size: 16,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(platform),
-                    ],
+                  Text(
+                    platform,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
             ),
 
-            const Icon(Icons.chevron_right),
+            const Icon(
+              Icons.chevron_right,
+            ),
           ],
         ),
       ),

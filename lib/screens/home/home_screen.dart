@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+
+import '../../models/game.dart';
+import '../../services/game_service.dart';
 import '../../widgets/game_card.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -9,41 +12,86 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final GameService gameService = GameService();
+
+  List<Game> games = [];
+
+  bool isLoading = true;
+  String? errorMessage;
+
   int currentIndex = 0;
 
-  final List<Map<String, String>> games = [
-    {
-      'title': 'Overwatch 2',
-      'genre': 'Shooter',
-      'platform': 'PC',
-    },
-    {
-      'title': 'Valorant',
-      'genre': 'Shooter',
-      'platform': 'PC',
-    },
-    {
-      'title': 'League of Legends',
-      'genre': 'MOBA',
-      'platform': 'PC',
-    },
-    {
-      'title': 'Genshin Impact',
-      'genre': 'Action RPG',
-      'platform': 'PC / Mobile',
-    },
-    {
-      'title': 'Hearthstone',
-      'genre': 'Card Game',
-      'platform': 'PC / Mobile',
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+
+    loadGames();
+  }
+
+  Future<void> loadGames() async {
+    try {
+      final result = await gameService.getGames();
+
+      setState(() {
+        games = result;
+        isLoading = false;
+      });
+    } catch (error) {
+      setState(() {
+        errorMessage = 'Failed to load games';
+        isLoading = false;
+      });
+    }
+  }
+
+  Widget buildBody() {
+    if (isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
+    if (errorMessage != null) {
+      return Center(
+        child: Text(
+          errorMessage!,
+        ),
+      );
+    }
+
+    if (games.isEmpty) {
+      return const Center(
+        child: Text(
+          'No games found',
+        ),
+      );
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 16,
+      ),
+      itemCount: games.length,
+      itemBuilder: (context, index) {
+        final game = games[index];
+
+        return GameCard(
+          title: game.title,
+          genre: game.genre,
+          platform: game.platform,
+          thumbnail: game.thumbnail,
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Game Discovery'),
+        title: const Text(
+          'Game Discovery',
+        ),
         centerTitle: true,
       ),
 
@@ -55,7 +103,9 @@ class _HomeScreenState extends State<HomeScreen> {
               child: TextField(
                 decoration: InputDecoration(
                   hintText: 'Search games...',
-                  prefixIcon: const Icon(Icons.search),
+                  prefixIcon: const Icon(
+                    Icons.search,
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -64,19 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
 
             Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: games.length,
-                itemBuilder: (context, index) {
-                  final game = games[index];
-
-                  return GameCard(
-                    title: game['title']!,
-                    genre: game['genre']!,
-                    platform: game['platform']!,
-                  );
-                },
-              ),
+              child: buildBody(),
             ),
           ],
         ),
