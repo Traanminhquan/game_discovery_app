@@ -19,7 +19,9 @@ class GameCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(
+        bottom: 14,
+      ),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
@@ -28,11 +30,12 @@ class GameCard extends StatelessWidget {
           child: Row(
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius:
+                    BorderRadius.circular(10),
                 child: Image.network(
                   thumbnail,
-                  width: 90,
-                  height: 70,
+                  width: 100,
+                  height: 76,
                   fit: BoxFit.cover,
                   errorBuilder: (
                     context,
@@ -40,18 +43,20 @@ class GameCard extends StatelessWidget {
                     stackTrace,
                   ) {
                     return Container(
-                      width: 90,
-                      height: 70,
-                      color: Colors.grey.shade300,
+                      width: 100,
+                      height: 76,
+                      color:
+                          Colors.grey.shade300,
                       child: const Icon(
                         Icons.sports_esports,
+                        size: 32,
                       ),
                     );
                   },
                 ),
               ),
 
-              const SizedBox(width: 16),
+              const SizedBox(width: 14),
 
               Expanded(
                 child: Column(
@@ -66,21 +71,50 @@ class GameCard extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 17,
                         fontWeight:
-                            FontWeight.bold,
+                            FontWeight.w600,
                       ),
                     ),
 
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 8),
 
-                    Text(genre),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.category_outlined,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            genre,
+                            maxLines: 1,
+                            overflow:
+                                TextOverflow
+                                    .ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
 
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 5),
 
-                    Text(
-                      platform,
-                      maxLines: 1,
-                      overflow:
-                          TextOverflow.ellipsis,
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.devices,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            platform,
+                            maxLines: 1,
+                            overflow:
+                                TextOverflow
+                                    .ellipsis,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
