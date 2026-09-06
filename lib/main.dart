@@ -1,13 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'providers/favorite_provider.dart';
 import 'providers/game_provider.dart';
 import 'screens/home/home_screen.dart';
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => GameProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => GameProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) {
+            final provider = FavoriteProvider();
+
+            provider.loadFavorites();
+
+            return provider;
+          },
+        ),
+      ],
       child: const GameDiscoveryApp(),
     ),
   );

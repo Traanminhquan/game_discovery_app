@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../models/game.dart';
 import '../../services/game_service.dart';
+import '../../providers/favorite_provider.dart';
 
 class GameDetailScreen extends StatefulWidget {
   final int gameId;
@@ -62,6 +64,34 @@ class _GameDetailScreenState
         title: const Text(
           'Game Detail',
         ),
+        actions: [
+          if (game != null)
+            Consumer<FavoriteProvider>(
+              builder: (
+                context,
+                favoriteProvider,
+                child,
+              ) {
+                final isFavorite =
+                    favoriteProvider.isFavorite(
+                  game!.id,
+                );
+
+                return IconButton(
+                  onPressed: () {
+                    favoriteProvider.toggleFavorite(
+                      game!.id,
+                    );
+                  },
+                  icon: Icon(
+                    isFavorite
+                        ? Icons.favorite
+                        : Icons.favorite_border,
+                  ),
+                );
+              },
+            ),
+        ],
       ),
       body: _buildBody(),
     );

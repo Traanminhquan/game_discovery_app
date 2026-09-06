@@ -17,6 +17,8 @@ class GameProvider extends ChangeNotifier {
 
   List<Game> get games => _filteredGames;
 
+  List<Game> get allGames => _games;
+
   bool get isLoading => _isLoading;
 
   String? get errorMessage => _errorMessage;
