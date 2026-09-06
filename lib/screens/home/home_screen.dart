@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../providers/game_provider.dart';
 import '../../widgets/game_card.dart';
+import '../game_detail/game_detail_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -172,6 +173,18 @@ class _HomeScreenState extends State<HomeScreen> {
           genre: game.genre,
           platform: game.platform,
           thumbnail: game.thumbnail,
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return GameDetailScreen(
+                    gameId: game.id,
+                  );
+                },
+              ),
+            );
+          },
         );
       },
     );
