@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "797960223311",
+    "project_id": "game-discovery-app-1441e",
+    "storage_bucket": "game-discovery-app-1441e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:797960223311:android:23ade394ff28630d3a883a",
+        "android_client_info": {
+          "package_name": "com.example.game_discovery_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdU-7MTshoPtHcDyuAfvMhPqszO7w1fJs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

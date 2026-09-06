@@ -5,6 +5,7 @@ import '../../providers/game_provider.dart';
 import '../../widgets/game_card.dart';
 import '../game_detail/game_detail_screen.dart';
 import '../favorites/favorites_screen.dart';
+import '../profile/profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -119,6 +120,19 @@ class _HomeScreenState extends State<HomeScreen> {
               MaterialPageRoute(
                 builder: (context) {
                   return const FavoritesScreen();
+                },
+              ),
+            );
+
+            return;
+          }
+
+          if (index == 2) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return const ProfileScreen();
                 },
               ),
             );

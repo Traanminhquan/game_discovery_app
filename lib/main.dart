@@ -1,11 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:game_discovery_app/screens/auth/login_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 import 'providers/favorite_provider.dart';
 import 'providers/game_provider.dart';
 import 'screens/home/home_screen.dart';
+import 'providers/auth_provider.dart';
+import 'screens/auth/login_screen.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   runApp(
     MultiProvider(
       providers: [
@@ -15,11 +26,12 @@ void main() {
         ChangeNotifierProvider(
           create: (_) {
             final provider = FavoriteProvider();
-
             provider.loadFavorites();
-
             return provider;
           },
+        ),
+        ChangeNotifierProvider(
+          create: (_) => AuthProvider(),
         ),
       ],
       child: const GameDiscoveryApp(),
@@ -38,7 +50,7 @@ class GameDiscoveryApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
       ),
-      home: const HomeScreen(),
+      home: const LoginScreen(),
     );
   }
 }
